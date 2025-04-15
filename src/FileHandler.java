@@ -7,6 +7,7 @@ import java.util.ArrayList;
 interface FileHandler {
 
     //METHODS
-    public void saveToFile(); // interface method (does not have a body)
-    public ArrayList<Transaction> loadFromFile(String fileName);
+    public void saveToFile(String file, ArrayList<Transaction> transactionList) throws Exception;// interface method (does not have a body)
+
+    public ArrayList<Transaction> loadFromFile(String fileName) throws Exception;
 }

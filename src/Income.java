@@ -11,9 +11,13 @@ public class Income extends Transaction {
         super(description, amount, date);
     }
 
+
     //METHODS
     @Override
     public String getSummary() {
-        return "Income";
+        return "INCOME\n" +
+                "Description: " + getDescription() + "\n" +
+                "Amount: " + getAmount() + "\n" +
+                "Date: " + getDate() + "\n";
     }
 }
