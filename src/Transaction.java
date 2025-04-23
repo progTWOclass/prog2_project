@@ -35,6 +35,9 @@ abstract class Transaction {
         this.description = description;
     }
     public void setAmount(double amount) {
+        if (amount < 0) {
+            throw new IllegalArgumentException("Amount cannot be negative.");
+        }
         this.amount = amount;
     }
     public void setDate(LocalDate date) {

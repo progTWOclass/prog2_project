@@ -29,6 +29,9 @@ public class SpendingLimit {
         this.category = category;
     }
     public void setLimit(double limit){
+        if (limit < 0) {
+            throw new IllegalArgumentException("Limit cannot be negative.");
+        }
         this.limit = limit;
     }
 

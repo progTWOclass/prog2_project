@@ -35,7 +35,7 @@ public class Expense extends Transaction{
     //METHODS
     @Override
     public String getSummary() {
-        return "Expense\n" +
+        return "EXPENSE\n" +
                 "Description: " + getDescription() + "\n" +
                 "Amount: $" + String.format("%.2f", getAmount()) + "\n" +
                 "Date: " + getDate() + "\n" +

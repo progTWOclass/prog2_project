@@ -3,19 +3,19 @@
 // Written by: (include your name and student id)
 // For “Programming 2” Section (include number)– Winter 2025
 // --------------------------------------------------------
+import Exceptions.InvalidAmountException;
 import Exceptions.SpendingLimitExceededException;
+import Exceptions.SpendingLimitNotFoundException;
 import Exceptions.TransactionNotFoundException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
-import java.util.Scanner;
 public class FinanceManager {
 
     //CLASS VARIABLES
     private ArrayList<Transaction> transactions;
     private ArrayList<SpendingLimit> spendingLimit;
-    private static Scanner input = new Scanner(System.in);
 
 
     //CONSTRUCTORS
@@ -43,7 +43,8 @@ public class FinanceManager {
 
     //METHODS
     //add a transaction either income or expense
-    public void addTransaction(Transaction tranAdd) {
+    public void addTransaction(Transaction tranAdd){
+
         try {
             //check if adding another expense will exceed our spending limit or not
             if (tranAdd instanceof Expense) {
@@ -57,7 +58,7 @@ public class FinanceManager {
     }
 
     //remove a transaction based on the keyword given by the user
-    public boolean removeTransaction(String description){
+    public boolean removeTransaction(String description) throws TransactionNotFoundException{
         try {
             Transaction transactionFound = searchTransactionByDescription(description);
             return transactions.remove(transactionFound);//remove transaction successful
@@ -88,7 +89,7 @@ public class FinanceManager {
         //get the current index, and find the description we are looking for
         //this works with partial description as well (ex: find "shopping" in "grocery shopping")
         Transaction findDescription = transactions.get(index);
-        if(findDescription.getDescription().toLowerCase().contains(description)){
+        if(findDescription.getDescription().toLowerCase().contains(description.toLowerCase())){
             return findDescription;
         }
         //we increment index in order the satisfy the base case
@@ -103,7 +104,7 @@ public class FinanceManager {
                 income += findIncome.getAmount();
             }
         }
-        return income;
+        return Double.parseDouble(String.format("%.2f", income));
     }
 
     //method for finding the total expense of the user
@@ -114,11 +115,22 @@ public class FinanceManager {
                 expense += findExpense.getAmount();
             }
         }
-        return expense;
+        return Double.parseDouble(String.format("%.2f", expense));
+    }
+
+    //in charge of finding the user's current balance
+    public double getBalance() {
+        double balance = getTotalIncome() - getTotalExpense();
+        return Double.parseDouble(String.format("%.2f", balance));
     }
 
     //allow the user to add a spending limit to a specific category
-    public void addSpendingLimit(Expense.ExpenseCategory categoryLimit, double limit){
+    public void addSpendingLimit(Expense.ExpenseCategory categoryLimit, double limit) throws InvalidAmountException {
+
+        if(limit < 0){
+            throw new InvalidAmountException("Limit must be positive");
+        }
+
         //check if the user wants to update their spending limit
         for(SpendingLimit exist : spendingLimit){
             if(exist.getCategory() == categoryLimit){
@@ -127,10 +139,16 @@ public class FinanceManager {
             }
         }
         spendingLimit.add(new SpendingLimit(categoryLimit, limit));
+        System.out.println("New limit updated successfully");
+        System.out.println("New limit for " + categoryLimit + " is $" + limit);
     }
 
     //allow the user to remove their spending limit of a specific category
-    public void removeSpendingLimit(Expense.ExpenseCategory categoryLimit){
+    public void removeSpendingLimit(Expense.ExpenseCategory categoryLimit) throws SpendingLimitNotFoundException {
+
+        if (categoryLimit == null) {
+            throw new SpendingLimitNotFoundException("No spending limit set for category: " + categoryLimit);
+        }
         for(int i = 0; i< spendingLimit.size(); i++){
             if (spendingLimit.get(i).getCategory() == categoryLimit) {
                 spendingLimit.remove(i);
@@ -139,9 +157,10 @@ public class FinanceManager {
         }
     }
 
-    //look for the current spending total of a specific category
+    //checkSpendingLimit() will use this method to look for the current spending
+    // total of a specific category
     public double getCurrentSpendingLimit (Expense.ExpenseCategory category){
-        double categoryTotal = 0;
+        double categoryTotal = 0.0;
         for(Transaction spending : transactions){
             if(spending instanceof Expense){
                 Expense expense = (Expense) spending;//type cast to get category and amount from expense class
@@ -153,6 +172,7 @@ public class FinanceManager {
         return categoryTotal;
     }
 
+    //a method only for this class, addTransaction() will use this method to
     //check if adding another expense will exceed the spending limit for the specified category
     private void checkSpendingLimit (Expense expense) throws SpendingLimitExceededException{
         for(SpendingLimit limits : spendingLimit){
@@ -164,84 +184,6 @@ public class FinanceManager {
                             expense.getCategory(), limits.getLimit(), currentSpendingLimit));
                 }
             }
-        }
-    }
-
-    public static void main(String[] args) {
-
-        FinanceManager money = new FinanceManager();
-        System.out.println("Add New Transaction. 1 for income, 2 for expense");
-        try{
-            int choice = input.nextInt();
-            input.nextLine();
-            if(choice == 1){
-                try{
-                    System.out.println("add a description");
-                    String description = input.nextLine();
-//                    input.nextLine();
-                    System.out.println("add a salary");
-                    double salary = input.nextDouble();
-                    System.out.println("enter a year");
-                    int year = input.nextInt();
-                    System.out.println("enter a month");
-                    int month = input.nextInt();
-                    System.out.println("enter a day");
-                    int day = input.nextInt();
-                    LocalDate date = LocalDate.of(year, month, day);
-                    Income income = new Income(description, salary, date);
-                    //System.out.println(income.getSummary());
-                    money.addTransaction(income);
-                    for(Transaction t : money.transactions){
-                        System.out.println(t.getSummary());
-                    }
-                }catch(InputMismatchException e){
-                    System.out.println("input invalid");
-                }
-            }else{
-                try{
-                    System.out.println("add a description");
-                    String description = input.nextLine();
-//                    input.nextLine();
-                    System.out.println("add the amount");
-                    double expense = input.nextDouble();
-                    System.out.println("enter a year");
-                    int year = input.nextInt();
-                    System.out.println("enter a month");
-                    int month = input.nextInt();
-                    System.out.println("enter a day");
-                    int day = input.nextInt();
-                    LocalDate date = LocalDate.of(year, month, day);
-                    // Display available categories
-                    System.out.println("Available categories:");
-                    Expense.ExpenseCategory[] categories = Expense.ExpenseCategory.values();
-                    for (int i = 0; i < categories.length; i++) {
-                        System.out.println((i+1) + ". " + categories[i]);
-                    }
-
-                    System.out.println("Select a category (1-" + categories.length + "):");
-                    int categoryChoice = input.nextInt();
-                    input.nextLine(); // Consume newline
-
-                    // Validate category choice
-                    if (categoryChoice < 1 || categoryChoice > categories.length) {
-                        System.out.println("Invalid category selection");
-                        return;
-                    }
-
-                    Expense.ExpenseCategory category = categories[categoryChoice-1];
-                    Expense expenses = new Expense(description, expense, date, category);
-                    //System.out.println(expenses.getSummary());
-                    money.addTransaction(expenses);
-
-                    for(Transaction t : money.transactions){
-                        System.out.println(t.getSummary());
-                    }
-                }catch(InputMismatchException e){
-                    System.out.println("input invalid");
-                }
-            }
-        }catch(InputMismatchException e){
-            System.out.println("invalid input. please enter 1 or 2");
         }
     }
 }

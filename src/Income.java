@@ -17,7 +17,7 @@ public class Income extends Transaction {
     public String getSummary() {
         return "INCOME\n" +
                 "Description: " + getDescription() + "\n" +
-                "Amount: " + getAmount() + "\n" +
+                "Amount: $" + String.format("%.2f", getAmount()) + "\n" +
                 "Date: " + getDate() + "\n";
     }
 }

@@ -1,0 +1,4 @@
+INCOME: salary, 2000.0, 2302-12-12
+INCOME: collect rent, 2000.0, 2024-12-26
+EXPENSE: grocery shopping, 200.0, 2010-09-09, FOOD
+EXPENSE: shopping, 400.0, 2025-12-25, OTHER
