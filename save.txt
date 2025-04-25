@@ -1,3 +1,0 @@
-INCOME: job salary, 5000.0, 2024-12-12
-INCOME: rent ralary, 3000.0, 2024-11-11
-EXPENSE: shopping, 200.0, 2021-10-01, OTHER

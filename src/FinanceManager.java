@@ -43,8 +43,7 @@ public class FinanceManager {
 
     //METHODS
     //add a transaction either income or expense
-    public void addTransaction(Transaction tranAdd){
-
+    public void addTransaction(Transaction tranAdd) throws SpendingLimitExceededException {
         try {
             //check if adding another expense will exceed our spending limit or not
             if (tranAdd instanceof Expense) {
@@ -52,6 +51,7 @@ public class FinanceManager {
                 checkSpendingLimit(addExpense);
             }
             transactions.add(tranAdd);
+            System.out.println("Transaction registered successfully");
         }catch (SpendingLimitExceededException sLEE){
             System.out.println("Warning " + sLEE.getMessage());
         }
@@ -126,7 +126,6 @@ public class FinanceManager {
 
     //allow the user to add a spending limit to a specific category
     public void addSpendingLimit(Expense.ExpenseCategory categoryLimit, double limit) throws InvalidAmountException {
-
         if(limit < 0){
             throw new InvalidAmountException("Limit must be positive");
         }
@@ -139,8 +138,6 @@ public class FinanceManager {
             }
         }
         spendingLimit.add(new SpendingLimit(categoryLimit, limit));
-        System.out.println("New limit updated successfully");
-        System.out.println("New limit for " + categoryLimit + " is $" + limit);
     }
 
     //allow the user to remove their spending limit of a specific category
@@ -163,7 +160,9 @@ public class FinanceManager {
         double categoryTotal = 0.0;
         for(Transaction spending : transactions){
             if(spending instanceof Expense){
-                Expense expense = (Expense) spending;//type cast to get category and amount from expense class
+                //type cast to get getCategory method from expense class
+                //since it is the only class that has this method
+                Expense expense = (Expense) spending;
                 if(expense.getCategory() == category){
                     categoryTotal += expense.getAmount();
                 }
@@ -174,16 +173,17 @@ public class FinanceManager {
 
     //a method only for this class, addTransaction() will use this method to
     //check if adding another expense will exceed the spending limit for the specified category
-    private void checkSpendingLimit (Expense expense) throws SpendingLimitExceededException{
+    private boolean checkSpendingLimit (Expense expense) throws SpendingLimitExceededException{
         for(SpendingLimit limits : spendingLimit){
             if(limits.getCategory() == expense.getCategory()){
                 double currentSpendingLimit = getCurrentSpendingLimit(expense.getCategory());
                 if(currentSpendingLimit + expense.getAmount() > limits.getLimit()){
                     throw new SpendingLimitExceededException(
                             String.format("You will exceed %s limit of $%.2f (current: $%.2f)",
-                            expense.getCategory(), limits.getLimit(), currentSpendingLimit));
+                                    limits.getCategory(), limits.getLimit(), currentSpendingLimit));
                 }
             }
         }
+        return true;
     }
 }

@@ -1,4 +1,4 @@
-INCOME: salary, 5000.0, 2023-12-12
-INCOME: side hustle, 2000.0, 2022-01-01
-EXPENSE: grocery shoppping, 500.0, 2024-09-05, FOOD
-EXPENSE: clothes shopping, 200.0, 2025-06-06, OTHER
+INCOME:salary, 5000.0, 2023-12-12
+INCOME:side hustle, 2000.0, 2022-01-01
+EXPENSE:grocery shopping, 500.0, 2024-09-05, FOOD
+EXPENSE:clothes shopping, 200.0, 2025-06-06, OTHER
